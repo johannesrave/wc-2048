@@ -1,0 +1,21 @@
+body {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-rows: max-content 1fr;
+}
+
+header, main {
+  display: grid;
+  place-content: center;
+}
+
+header {
+  height: 4rem;
+  font-size: 2rem;
+}
+
+
+game-board {
+  display: block;
+}
