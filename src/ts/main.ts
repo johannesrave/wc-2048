@@ -95,23 +95,18 @@ class GameRow extends HTMLElement {
 
   constructor() {
     super();
+    const template = document.createElement('template');
 
-
-    // const style = document.createElement('style');
-    //
-    // style.innerHTML = `
-    // :host {
-    //   all: initial;
-    //   display: block;
-    //   contain: content;
-    //   display: grid;
-    //   background-color: red;
-    //   width: 30px;
-    //   height: 30px;
-    // }`;
-
-    // this.appendChild(style);
-    // this.attachShadow({mode: 'open'}).appendChild(style);
+    template.innerHTML = `
+      <slot></slot>
+      <style>
+      :host {
+        display: contents;
+      }
+      </style>
+    `
+    const shadow = this.attachShadow({mode: 'open'});
+    shadow.appendChild(template.content);
   }
 }
 
@@ -123,24 +118,28 @@ class GameBoard extends HTMLElement {
   constructor() {
     super();
 
-    const shadow = this.attachShadow({mode: 'open'});
-    const style = document.createElement('style');
-
-    style.innerHTML = `
-    :host {
-      all: initial;
-      display: grid;
-      contain: content;
-      gap: 4px;
-      border: solid 2px red;
-    }`;
-
-    shadow.appendChild(style);
-
     const rowsAttribute = this.getAttribute('rows') ?? '4';
     this.rows = parseInt(rowsAttribute);
     const columnsAttribute = this.getAttribute('rows') ?? '4';
     this.columns = parseInt(columnsAttribute);
+
+    const shadow = this.attachShadow({mode: 'open'});
+    const template = document.createElement('template');
+
+    template.innerHTML = `
+      <slot></slot>
+      <style>
+        :host {
+          all: initial;
+          display: grid;
+          grid-template-columns: repeat(${this.columns}, 1fr);
+          contain: content;
+          gap: 4px;
+          border: solid 2px red;
+        }
+      </style>`;
+
+    shadow.appendChild(template.content);
 
 
     for (let i = 0; i < this.rows; i++) {
@@ -155,7 +154,7 @@ class GameBoard extends HTMLElement {
     }
   }
 
-  connectedCallback(){
+  connectedCallback() {
     console.log("game-board connected")
   }
 
