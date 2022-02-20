@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   width: 100vw;
   height: 100vh;
@@ -8,6 +12,7 @@ body {
 header, main {
   display: grid;
   place-content: center;
+  gap: 16px;
 }
 
 header {

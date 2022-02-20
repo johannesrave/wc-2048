@@ -71,86 +71,74 @@ class GameToken extends HTMLElement {
 class GameTile extends HTMLElement {
   constructor() {
     super();
-    const shadow = this.attachShadow({mode: 'open'});
     const style = document.createElement('style');
 
-    style.innerHTML = `
-    :host {
+    this.innerHTML = `
+    <style>
+    game-tile {
       display: grid;
+      grid-auto-flow: row;
       place-content: center;
       width: ${tileSize};
       height: ${tileSize};
       border: solid 2px blue;
-    }`;
-
-    shadow.appendChild(style);
-    const testP = document.createElement('p')
-    testP.innerText = 'TESTING'
-    shadow.appendChild(testP);
-    // this.innerHTML = '<p>|_|</p>'
-  }
-}
-
-class GameRow extends HTMLElement {
-
-  constructor() {
-    super();
-    const template = document.createElement('template');
-
-    template.innerHTML = `
-      <slot></slot>
-      <style>
-      :host {
-        display: contents;
-      }
-      </style>
-    `
-    const shadow = this.attachShadow({mode: 'open'});
-    shadow.appendChild(template.content);
+      border-radius: 8px;
+    }
+    </style>
+    `;
   }
 }
 
 class GameBoard extends HTMLElement {
   rows: number;
   columns: number;
-  board: GameRow[] = [];
+  board: GameTile[] = [];
+
+  static get observedAttributes() {
+    return ['rows', 'columns'];
+  }
 
   constructor() {
     super();
 
     const rowsAttribute = this.getAttribute('rows') ?? '4';
     this.rows = parseInt(rowsAttribute);
-    const columnsAttribute = this.getAttribute('rows') ?? '4';
+    const columnsAttribute = this.getAttribute('columns') ?? '4';
     this.columns = parseInt(columnsAttribute);
 
-    const shadow = this.attachShadow({mode: 'open'});
+    this.createBoard();
+  }
+
+  private createBoard() {
+
+    const rowsAttribute = this.getAttribute('rows') ?? '4';
+    this.rows = parseInt(rowsAttribute);
+    const columnsAttribute = this.getAttribute('columns') ?? '4';
+    this.columns = parseInt(columnsAttribute);
+
     const template = document.createElement('template');
 
     template.innerHTML = `
-      <slot></slot>
       <style>
-        :host {
-          all: initial;
+        game-board {
           display: grid;
           grid-template-columns: repeat(${this.columns}, 1fr);
           contain: content;
           gap: 4px;
           border: solid 2px red;
+          border-radius: 10px;
         }
       </style>`;
-
-    shadow.appendChild(template.content);
-
-
-    for (let i = 0; i < this.rows; i++) {
-      const gameRow = document.createElement('game-row');
-      for (let i = 0; i < this.columns; i++) {
+    this.replaceChildren(template.content);
+    for (let y = 0; y < this.rows; y++) {
+      for (let x = 0; x < this.columns; x++) {
         const gameTile = document.createElement('game-tile');
+        gameTile.setAttribute('x', x.toString());
+        gameTile.setAttribute('y', y.toString());
 
-        gameRow.appendChild(gameTile);
+        this.appendChild(gameTile);
+        this.board.push(gameTile)
       }
-      this.board.push(gameRow)
-      shadow.appendChild(gameRow);
     }
   }
 
@@ -159,7 +147,9 @@ class GameBoard extends HTMLElement {
   }
 
   attributeChangedCallback() {
-
+    console.log('attributes changed')
+    if (this.shadowRoot)
+      this.createBoard();
   }
 
 }
@@ -171,7 +161,20 @@ class GameScore extends HTMLElement {
   constructor() {
     super();
 
-    this.innerText = this.score.toString();
+    this.innerHTML = `
+      <style>
+        game-score {
+          contain: content;
+          display: grid;
+          place-content: center;
+          border: solid 2px blue;
+          border-radius: 10px;
+        }
+      </style>
+      <p>Score: ${this.score}</p>
+    `;
+
+    // this.innerText = this.score.toString();
   }
 }
 
@@ -179,7 +182,6 @@ class GameScore extends HTMLElement {
 const customGameElements = {
   'game-board': GameBoard,
   'game-token': GameToken,
-  'game-row': GameRow,
   'game-tile': GameTile,
   'game-score': GameScore,
 };
