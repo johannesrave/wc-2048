@@ -1,12 +1,13 @@
 import {GameScore} from "./gameScore";
 import {GameTile} from "./gameTile";
 import {GameBoard} from "./gameBoard";
+import {GameToken} from "./gameToken";
 
 export {};
 
 console.log("TypeScript is being compiled.")
 
-const gameElement = document.getElementById('game');
+
 /*
 entities:
 game
@@ -48,13 +49,6 @@ maybe creating a board-component is more in the spirit of the technology:
 
  */
 
-class GameToken extends HTMLElement {
-
-  constructor() {
-    super();
-  }
-}
-
 const customGameElements = {
   'game-board': GameBoard,
   'game-token': GameToken,
@@ -65,3 +59,7 @@ const customGameElements = {
 Object.entries(customGameElements).forEach(([element, className]) => {
   customElements.define(element, className);
 });
+
+
+const gameElement = document.getElementById('game');
+const board = document.getElementsByTagName('game-board')[0] as GameBoard;

@@ -11,6 +11,8 @@ body {
   height: 100vh;
   display: grid;
   grid-template-rows: max-content 1fr;
+  background: #3a6e94;
+
 }
 
 header, main {
@@ -24,7 +26,34 @@ header {
   font-size: 2rem;
 }
 
+game-board {
+  gap: 4px;
+  background: #3a6e94;
+  /*border: solid 2px red;*/
+  border-radius: 10px;
+}
+
 game-tile {
   width: var(--tile-size);
   height: var(--tile-size);
+  background: #3a6e94;
+  border: 4px #5d87a6 inset;
+  border-radius: 8px;
+  /*border-style: 32px 8px;*/
+}
+
+game-token {
+  width: var(--tile-size);
+  height: var(--tile-size);
+  background: #655cb6;
+  border: solid 2px darkslateblue;
+  border-radius: 8px;
+}
+
+
+game-score {
+  background: #3a6e94;
+  border: 4px #5d87a6 outset;
+  border-radius: 8px;
+  /*border-style: 32px 8px;*/
 }

@@ -11,8 +11,6 @@ export class GameScore extends HTMLElement {
           contain: content;
           display: grid;
           place-content: center;
-          border: solid 2px blue;
-          border-radius: 10px;
         }
       </style>
       <p>Score: ${this.score}</p>

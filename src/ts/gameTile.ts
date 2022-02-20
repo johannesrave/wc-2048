@@ -11,8 +11,6 @@ export class GameTile extends HTMLElement {
       display: grid;
       grid-auto-flow: row;
       place-content: center;
-      border: solid 2px blue;
-      border-radius: 8px;
     }
     </style>
     `;

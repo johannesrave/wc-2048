@@ -26,9 +26,7 @@ export class GameBoard extends HTMLElement {
           display: grid;
           grid-template-columns: repeat(${this.columns}, 1fr);
           contain: content;
-          gap: 4px;
-          border: solid 2px red;
-          border-radius: 10px;
+
         }
       </style>`;
     this.replaceChildren(template.content);
