@@ -1,3 +1,7 @@
+:root {
+  --tile-size: 128px;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -18,4 +22,9 @@ header, main {
 header {
   height: 4rem;
   font-size: 2rem;
+}
+
+game-tile {
+  width: var(--tile-size);
+  height: var(--tile-size);
 }
