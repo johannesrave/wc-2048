@@ -42,7 +42,7 @@ export class GameBoard extends HTMLElement {
   }
 
   connectedCallback() {
-    console.log("game-board connected")
+    // console.log("game-board connected")
   }
 
   attributeChangedCallback() {
@@ -50,7 +50,7 @@ export class GameBoard extends HTMLElement {
     this.rows = parseInt(rowsAttribute);
     const columnsAttribute = this.getAttribute('columns') ?? '4';
     this.columns = parseInt(columnsAttribute);
-    console.log('attributes changed')
+    // console.log('attributes changed')
     this.createBoard();
   }
 }

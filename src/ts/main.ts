@@ -6,7 +6,6 @@ import {GameToken} from "./gameToken";
 
 export {};
 
-console.log("TypeScript is being compiled.")
 
 const customGameElements = {
   'game-board': GameBoard,
@@ -16,30 +15,46 @@ const customGameElements = {
 };
 
 Object.entries(customGameElements).forEach(([element, className]) => {
+  console.info(`Registering <${element}>`)
   customElements.define(element, className);
 });
 
 const gameElement = document.getElementById('game');
 const board = document.getElementsByTagName('game-board')[0] as GameBoard;
+const score = document.getElementsByTagName('game-score')[0] as GameScore;
 const tiles: GameTile[] = Array.from(board.querySelectorAll('game-tile'));
 
-console.log(tiles)
-
+console.log("Starting game.")
 window.addEventListener('keydown', handleKey)
 
+const keyDirection: {
+  [key in DirectionKey]: Direction;
+} = {
+  "ArrowLeft": "left",
+  "ArrowRight": "right",
+  "ArrowDown": "down",
+  "ArrowUp": "up"
+}
+
+function getEmptyTiles(tiles: GameTile[]) {
+  return tiles
+    .filter(tile => Array.from(tile.children)
+      .every(child => !(child instanceof GameToken)));
+}
+
 function handleKey(event: KeyboardEvent) {
-  const keyDirection: {
-    [key in DirectionKey]: Direction;
-  } = {
-    "ArrowLeft": "left",
-    "ArrowRight": "right",
-    "ArrowDown": "down",
-    "ArrowUp": "up"
+  if (Object.keys(keyDirection).includes(event.key)) {
+    slideTokens(keyDirection[event.key as DirectionKey])
   }
 
-  if (Object.keys(keyDirection).includes(event.key)) {
-    slide(keyDirection[event.key as DirectionKey])
+  const emptyTiles = getEmptyTiles(tiles);
+  if (emptyTiles.length === 0) {
+    console.log("YOU LOST.");
+    return;
   }
+  let randomIndex = Math.floor(Math.random() * emptyTiles.length);
+  const token = document.createElement('game-token');
+  emptyTiles[randomIndex].appendChild(token);
 }
 
 type DirectionKey = "ArrowLeft" | "ArrowRight" | "ArrowDown" | "ArrowUp";
@@ -55,7 +70,7 @@ const axes: {
   right: {main: 'y', cross: 'x', reversed: true, length: 'rows'},
 }
 
-function slide(direction: Direction) {
+function slideTokens(direction: Direction) {
 
   let lanes: GameTile[][] = sortTilesIntoLanes(tiles, direction)
 
@@ -75,6 +90,8 @@ function slide(direction: Direction) {
         const otherToken = tileToCheck.querySelector('game-token') as GameToken;
         if (token.value === otherToken?.value && !tokenMerged) {
           token.value *= 2;
+          console.log(token.value)
+          score.score = score.score + token.value;
           otherToken.replaceWith(token);
           tokenMerged = true;
           return;
@@ -88,10 +105,6 @@ function slide(direction: Direction) {
       lane[0].appendChild(token)
     });
   })
-}
-
-function getTileByXY(x: number, y: number) {
-  return board.querySelector(`game-tile[x="${x}"][y="${y}"]`);
 }
 
 function sortTilesIntoLanes(tiles: GameTile[], direction: Direction) {
@@ -114,6 +127,10 @@ function placeToken(x: number, y: number) {
 
   const tile = getTileByXY(x, y)
   tile?.appendChild(token)
+}
+
+function getTileByXY(x: number, y: number) {
+  return board.querySelector(`game-tile[x="${x}"][y="${y}"]`);
 }
 
 placeToken(2, 2);
