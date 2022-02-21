@@ -1,8 +1,6 @@
 export class GameTile extends HTMLElement {
-  constructor() {
-    super();
-    // const style = document.createElement('style');
-  }
+  x!: number;
+  y!: number;
 
   connectedCallback() {
     this.innerHTML = `
@@ -14,5 +12,10 @@ export class GameTile extends HTMLElement {
     }
     </style>
     `;
+    let xString = this.getAttribute('x') ?? '';
+    this.x = parseInt(xString);
+
+    let yString = this.getAttribute('y') ?? '';
+    this.y = parseInt(yString);
   }
 }
