@@ -19,7 +19,6 @@ Object.entries(customGameElements).forEach(([element, className]) => {
   customElements.define(element, className);
 });
 
-const gameElement = document.getElementById('game');
 const board = document.getElementsByTagName('game-board')[0] as GameBoard;
 const score = document.getElementsByTagName('game-score')[0] as GameScore;
 const tiles: GameTile[] = Array.from(board.querySelectorAll('game-tile'));
@@ -42,11 +41,7 @@ function getEmptyTiles(tiles: GameTile[]) {
       .every(child => !(child instanceof GameToken)));
 }
 
-function handleKey(event: KeyboardEvent) {
-  if (Object.keys(keyDirection).includes(event.key)) {
-    slideTokens(keyDirection[event.key as DirectionKey])
-  }
-
+function placeRandomToken() {
   const emptyTiles = getEmptyTiles(tiles);
   if (emptyTiles.length === 0) {
     console.log("YOU LOST.");
@@ -55,6 +50,14 @@ function handleKey(event: KeyboardEvent) {
   let randomIndex = Math.floor(Math.random() * emptyTiles.length);
   const token = document.createElement('game-token');
   emptyTiles[randomIndex].appendChild(token);
+}
+
+function handleKey(event: KeyboardEvent) {
+  if (!Object.keys(keyDirection).includes(event.key)) {
+    return;
+  }
+  slideTokens(keyDirection[event.key as DirectionKey])
+  placeRandomToken();
 }
 
 type DirectionKey = "ArrowLeft" | "ArrowRight" | "ArrowDown" | "ArrowUp";
@@ -90,7 +93,7 @@ function slideTokens(direction: Direction) {
         const otherToken = tileToCheck.querySelector('game-token') as GameToken;
         if (token.value === otherToken?.value && !tokenMerged) {
           token.value *= 2;
-          console.log(token.value)
+          // console.log(token.value)
           score.score = score.score + token.value;
           otherToken.replaceWith(token);
           tokenMerged = true;
@@ -132,9 +135,10 @@ function placeToken(x: number, y: number) {
 function getTileByXY(x: number, y: number) {
   return board.querySelector(`game-tile[x="${x}"][y="${y}"]`);
 }
+placeRandomToken();
 
-placeToken(2, 2);
-placeToken(2, 3);
-placeToken(3, 2);
-placeToken(1, 2);
+// placeToken(2, 2);
+// placeToken(2, 3);
+// placeToken(3, 2);
+// placeToken(1, 2);
 
