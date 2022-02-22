@@ -4,8 +4,6 @@ export class GameScore extends HTMLElement {
   }
   set score(value: number) {
     this._score = value;
-    console.log(value);
-    console.log(this._score);
     this.innerHTML = `
       <style>
         game-score {
@@ -23,15 +21,6 @@ export class GameScore extends HTMLElement {
   constructor() {
     super();
 
-    this.innerHTML = `
-      <style>
-        game-score {
-          contain: content;
-          display: grid;
-          place-content: center;
-        }
-      </style>
-      <p>Score: ${this._score}</p>
-    `;
+    this.score = 0;
   }
 }
