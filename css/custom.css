@@ -1,5 +1,9 @@
 :root {
   --tile-size: 8rem;
+  --radius-m: 16px;
+  --radius-m-neg: calc(-1 * var(--radius-m));
+  --radius-l: 32px;
+  --background-color: #f9f9f2;
 }
 
 * {
@@ -13,14 +17,13 @@ body {
   height: 100vh;
   display: grid;
   grid-template-rows: max-content 1fr;
-  background: #3a6e94;
-
+  background: var(--background-color);
 }
 
 header, main {
   display: grid;
   place-content: center;
-  gap: 16px;
+  gap: var(--radius-l);
 }
 
 header {
@@ -28,39 +31,48 @@ header {
   font-size: 2rem;
 }
 
+game-score {
+  border-radius: var(--radius-l);
+  background: var(--background-color);
+  box-shadow:
+    /*12px 12px 26px #bebebe,*/
+  /*-12px -12px 26px #ffffff;*/
+
+  var(--radius-m) var(--radius-m) calc(2 * var(--radius-m)) #d4d4ce,
+  var(--radius-m-neg) var(--radius-m-neg) calc(2 * var(--radius-m)) #ffffff;
+}
+
 game-board {
   gap: 4px;
-  background: #3a6e94;
-  /*border: solid 2px red;*/
-  border-radius: 10px;
+  background: var(--background-color);
+  border-radius: var(--radius-m);
 }
 
 game-tile {
   width: var(--tile-size);
   height: var(--tile-size);
-  background: #3a6e94;
-  border: 4px #5d87a6 inset;
-  border-radius: 8px;
-  /*border-style: 32px 8px;*/
+
+  border-radius: var(--radius-m);
+  background: #b5b96c;
+  box-shadow:
+    inset var(--radius-m) var(--radius-m) calc(2 * var(--radius-m)) #9a9d5c,
+    inset var(--radius-m-neg) var(--radius-m-neg) calc(2 * var(--radius-m)) #d0d57c;
 }
 
 game-token {
   width: var(--tile-size);
   height: var(--tile-size);
-  background: #5c54a9;
-  border: outset 6px darkslateblue;
-  border-radius: 8px;
+  background: linear-gradient(145deg, #bc2960, #9e2251);
+  box-shadow:
+    inset var(--radius-m) var(--radius-m) var(--radius-m) #de6791,
+    inset var(--radius-m) var(--radius-m) calc(2 * var(--radius-m)) #c42755,
+    inset var(--radius-m-neg) var(--radius-m-neg) calc(2 * var(--radius-m)) #861254;
+  /*border: outset 6px darkslateblue;*/
+  border-radius: var(--radius-m);
 }
 
-game-token * {
+
+game-token p {
   font-size: 3rem;
-  color: #a9a2fa;
-}
-
-
-game-score {
-  background: #3a6e94;
-  border: 4px #5d87a6 outset;
-  border-radius: 8px;
-  /*border-style: 32px 8px;*/
+  color: var(--background-color);
 }

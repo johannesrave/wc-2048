@@ -7,6 +7,7 @@ export class GameTile extends HTMLElement {
     <style>
     game-tile {
       display: grid;
+      contain: layout size style;
       grid-auto-flow: row;
       place-content: center;
     }
