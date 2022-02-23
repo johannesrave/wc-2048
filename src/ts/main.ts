@@ -16,7 +16,7 @@ type Axis = "x" | "y";
 type AxisInfo = { cross: Axis; main: Axis; reversed: boolean, length: 'columns' | 'rows' };
 
 const axes: {
-  [key in Direction]:AxisInfo;
+  [key in Direction]: AxisInfo;
 } = {
   up: {main: 'x', cross: 'y', reversed: false, length: 'columns'},
   down: {main: 'x', cross: 'y', reversed: true, length: 'columns'},
@@ -45,17 +45,33 @@ const tiles: GameTile[] = Array.from(board.querySelectorAll('game-tile'));
 
 console.log("Starting game.")
 
-window.addEventListener('keydown', handleKey)
+window.addEventListener('keydown', handleKey);
+placeRandomToken();
 
 function handleKey(event: KeyboardEvent) {
   if (!Object.keys(keyDirection).includes(event.key)) return;
 
+  const boardBeforeMove = stringify(board);
+
   const direction = keyDirection[event.key as DirectionKey];
   slideTokens(direction)
-  placeRandomToken();
+
+  const boardAfterMove = stringify(board);
+
+  if (boardAfterMove === boardBeforeMove) {
+    console.log("BOARD HASN'T CHANGED");
+    return;
+  }
+
+  setTimeout(placeRandomToken, 250);
+
+  if (!isMovePossible()) {
+    console.log("YOU LOST.")
+    window.removeEventListener('keydown', handleKey);
+  }
 }
 
-function sortTilesIntoLanes(tiles: GameTile[], axisInfo:AxisInfo) {
+function sortTilesIntoLanes(tiles: GameTile[], axisInfo: AxisInfo) {
   const laneAxis: Axis = axisInfo.main;
   return tiles.reduce((lanes: GameTile[][], tile) => {
     const lane = tile[laneAxis];
@@ -68,12 +84,13 @@ function sortTilesIntoLanes(tiles: GameTile[], axisInfo:AxisInfo) {
     }
     return lanes;
   }, []);
+
 }
 
 function slideTokens(direction: Direction) {
   const axisInfo = axes[direction];
-  let lanes: GameTile[][] = sortTilesIntoLanes(tiles, axisInfo)
 
+  let lanes: GameTile[][] = sortTilesIntoLanes(tiles, axisInfo)
   lanes.forEach((lane) => {
     let tokenMerged = false;
     lane.forEach((tile, index) => {
@@ -82,6 +99,7 @@ function slideTokens(direction: Direction) {
       slideSingleToken(index, lane, token, tokenMerged);
     });
   })
+
 }
 
 function slideSingleToken(index: number, lane: GameTile[], token: GameToken, tokenMerged: boolean) {
@@ -100,6 +118,32 @@ function slideSingleToken(index: number, lane: GameTile[], token: GameToken, tok
     }
   }
   leaveOnLastTile(lane, token);
+
+}
+
+function isMovePossible(): boolean {
+  const emptyTiles = getEmptyTiles(tiles);
+  if (emptyTiles) return true;
+
+  const vertAxisInfo = axes['down'];
+  const horAxisInfo = axes['right'];
+
+  let lanes: GameTile[][] = [
+    ...sortTilesIntoLanes(tiles, vertAxisInfo),
+    ...sortTilesIntoLanes(tiles, horAxisInfo)
+  ]
+  return lanes
+    .some(lane => lane
+      .some((tile, index) => {
+        if (index + 1 === lane.length) return false;
+        const token = tile.querySelector('game-token') as GameToken;
+        const nextToken = lane[index + 1].querySelector('game-token') as GameToken;
+        if (!(token && nextToken)) return false;
+        else if (token.value === nextToken.value) {
+          return true;
+        }
+      }))
+
 }
 
 function mergeOnNextTile(token: GameToken, otherToken: GameToken) {
@@ -125,13 +169,25 @@ function getEmptyTiles(tiles: GameTile[]) {
 
 function placeRandomToken() {
   const emptyTiles = getEmptyTiles(tiles);
-  if (emptyTiles.length === 0) {
-    console.log("YOU LOST.");
-    return;
-  }
-  let randomIndex = Math.floor(Math.random() * emptyTiles.length);
+  const randomIndex = Math.floor(Math.random() * emptyTiles.length);
   const token = document.createElement('game-token');
   emptyTiles[randomIndex].appendChild(token);
 }
 
-placeRandomToken();
+// stolen and modified from https://stackoverflow.com/questions/46880822/how-to-json-stringify-a-dom-element
+function stringify(element: Element) {
+  let obj: { name: string; attributes: Array<any>; children: Array<any> } = {
+    name: element.localName,
+    attributes: [],
+    children: [],
+  };
+
+  Array.from(element.attributes).forEach(a => {
+    obj.attributes.push({name: a.name, value: a.value});
+  });
+  Array.from(element.children).forEach(child => {
+    obj.children.push(stringify(child));
+  });
+
+  return JSON.stringify(obj);
+}
