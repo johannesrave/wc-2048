@@ -64,6 +64,7 @@ function handleKey(event: KeyboardEvent) {
   }
 
   setTimeout(placeRandomToken, 250);
+
   if (!isMovePossible()) {
     console.log("YOU LOST.")
     window.removeEventListener('keydown', handleKey);
