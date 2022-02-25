@@ -54,7 +54,7 @@ function handleKey(event: KeyboardEvent) {
   const boardBeforeMove = stringify(board);
 
   const direction = keyDirection[event.key as DirectionKey];
-  slideTokens(direction)
+  slideTokens(tiles, direction)
 
   const boardAfterMove = stringify(board);
 
@@ -71,6 +71,24 @@ function handleKey(event: KeyboardEvent) {
   }
 }
 
+// could this logic be flipped? search through the tiles for the next token and whether it fits?
+// + could be more functional, would return the modified tiles
+// - would look at every tile, often more than once and unnecessarily
+function slideTokens(tiles: GameTile[], direction: Direction) {
+  const axisInfo = axes[direction];
+
+  let lanes: GameTile[][] = sortTilesIntoLanes(tiles, axisInfo)
+  lanes.map((lane) => {
+    let tokenMerged = false;
+    lane.forEach((tile, index) => {
+      const token = tile.querySelector('game-token') as GameToken;
+      if (!token) return;
+      slideSingleToken(index, lane, token, tokenMerged);
+    });
+    return lane;
+  })
+}
+
 function sortTilesIntoLanes(tiles: GameTile[], axisInfo: AxisInfo) {
   const laneAxis: Axis = axisInfo.main;
   return tiles.reduce((lanes: GameTile[][], tile) => {
@@ -84,22 +102,6 @@ function sortTilesIntoLanes(tiles: GameTile[], axisInfo: AxisInfo) {
     }
     return lanes;
   }, []);
-
-}
-
-function slideTokens(direction: Direction) {
-  const axisInfo = axes[direction];
-
-  let lanes: GameTile[][] = sortTilesIntoLanes(tiles, axisInfo)
-  lanes.forEach((lane) => {
-    let tokenMerged = false;
-    lane.forEach((tile, index) => {
-      const token = tile.querySelector('game-token') as GameToken;
-      if (!token) return;
-      slideSingleToken(index, lane, token, tokenMerged);
-    });
-  })
-
 }
 
 function slideSingleToken(index: number, lane: GameTile[], token: GameToken, tokenMerged: boolean) {
@@ -118,7 +120,6 @@ function slideSingleToken(index: number, lane: GameTile[], token: GameToken, tok
     }
   }
   leaveOnLastTile(lane, token);
-
 }
 
 function isMovePossible(): boolean {
@@ -142,8 +143,8 @@ function isMovePossible(): boolean {
         else if (token.value === nextToken.value) {
           return true;
         }
-      }))
-
+      })
+    )
 }
 
 function mergeOnNextTile(token: GameToken, otherToken: GameToken) {
@@ -190,4 +191,8 @@ function stringify(element: Element) {
   });
 
   return JSON.stringify(obj);
+}
+
+export const Game = {
+  placeRandomToken
 }

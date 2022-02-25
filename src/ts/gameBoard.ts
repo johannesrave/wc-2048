@@ -1,20 +1,12 @@
 import {GameTile} from "./gameTile";
 
 export class GameBoard extends HTMLElement {
-  rows: number;
-  columns: number;
-  board: GameTile[] = [];
+  rows!: number;
+  columns!: number;
+  tiles: GameTile[] = [];
 
   static get observedAttributes() {
     return ['rows', 'columns'];
-  }
-
-  constructor() {
-    super();
-    const rowsAttribute = this.getAttribute('rows') ?? '4';
-    this.rows = parseInt(rowsAttribute);
-    const columnsAttribute = this.getAttribute('columns') ?? '4';
-    this.columns = parseInt(columnsAttribute);
   }
 
   private createBoard() {
@@ -36,13 +28,13 @@ export class GameBoard extends HTMLElement {
         gameTile.setAttribute('y', y.toString());
 
         this.appendChild(gameTile);
-        this.board.push(gameTile)
+        this.tiles.push(gameTile)
       }
     }
   }
 
   connectedCallback() {
-    // console.log("game-board connected")
+    console.log("game-board connected")
   }
 
   attributeChangedCallback() {
@@ -50,7 +42,7 @@ export class GameBoard extends HTMLElement {
     this.rows = parseInt(rowsAttribute);
     const columnsAttribute = this.getAttribute('columns') ?? '4';
     this.columns = parseInt(columnsAttribute);
-    // console.log('attributes changed')
+    console.log('attributes changed')
     this.createBoard();
   }
 }
